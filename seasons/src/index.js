@@ -1,32 +1,36 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SeasonDisplay from './seasonDisplay';
+import Spinner from './spinner';
 
 class App extends  React.Component {
-    constructor(props) {
-        super(props);
-        // THIS IS THE ONLY TIME WE DO DIRECT ASSIGNMENT
-        this.state = { lat: null };
+    state = { lat: null, errorMessage: ''};
 
+    componentDidMount() {
         window.navigator.geolocation.getCurrentPosition(
-            (position) =>{
-                this.setState({lat: position.coords.latitude });
-            },
-            (err) => {
-                this.setState({ errorMessage: err.message });
-            }
+            (position) =>this.setState({lat: position.coords.latitude}),
+            (err) => this.setState({ errorMessage: err.message })
         );
     }
     
-    // REACT SAYS WE HAVE TO DEFINE RENDER!
-    render() {
-        console.log(this.state)
+    renderContent(){
         if(this.state.errorMessage && !this.state.lat) {
             return <div>Error: {this.state.errorMessage}</div>
         }
         if(!this.state.errorMessage && this.state.lat) {
-            return <div>Latitude: {this.state.lat}</div>
+            return <SeasonDisplay lat = {this.state.lat}/>
         }
-        return <div>Loading...</div>
+        return <Spinner message="Please accept location request"/>
+    }
+
+    // REACT SAYS WE HAVE TO DEFINE RENDER!
+    render() {
+
+        return (
+            <div className="border red">
+                {this.renderContent()}
+            </div>
+        )
     }
     
 };
