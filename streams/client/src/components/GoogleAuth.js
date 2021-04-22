@@ -4,6 +4,7 @@ import { signIn, signOut } from '../actions';
 
 class GoogleAuth extends React.Component {
     componentDidMount() {
+    console.log('before API this',this);
         window.gapi.load('client:auth2', () => {
             window.gapi.client
                 .init({
@@ -13,7 +14,7 @@ class GoogleAuth extends React.Component {
                 })
                 .then(() => {
                     this.auth = window.gapi.auth2.getAuthInstance();
-
+                    console.log('after API this',this)
                     this.onAuthChange(this.auth.isSignedIn.get());
                     this.auth.isSignedIn.listen(this.onAuthChange);
                 });
@@ -21,8 +22,10 @@ class GoogleAuth extends React.Component {
     }
 
     onAuthChange = isSignedIn => {
+        console.log('this',this);
+        console.log('this.props',this.props);
         if (isSignedIn) {
-            this.props.signIn();
+            this.props.signIn(this.auth.currentUser.get().getId());
         } else {
             this.props.signOut();
         }
@@ -61,6 +64,8 @@ class GoogleAuth extends React.Component {
     }
 }
 
+// 要使用 connect()，你需要定義一個名為 mapStateToProps 的特別 function，它述說將如何轉換目前 Redux store state 成為你想要傳到正在包裝的 presentational component 的 props
+// 也就是直接把 isSignedIn 注入 GoogleAuth Component 的 props,當你把props console 出來時, isSignedIn 已經存在且可以隨時使用
 const mapStateToProps = (state) => {
     return { isSignedIn: state.auth.isSignedIn };
 };
