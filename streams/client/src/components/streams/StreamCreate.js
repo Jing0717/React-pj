@@ -1,5 +1,7 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { connect } from 'react-redux';
+import { createStream } from '../../actions';
 
 class StreamCreate extends React.Component {
     renderError = ({ error, touched }) => {
@@ -21,11 +23,12 @@ class StreamCreate extends React.Component {
                 {this.renderError(meta)}
             </div>
         )
+    };
+    // must be arrow function than can 'createStream' binding to props
+    onSubmit = formValues => {
+        this.props.createStream(formValues)
     }
 
-    onSubmit(formValues) {
-        console.log(formValues);
-    }
     render() {
         console.log(this);
         return (
@@ -54,7 +57,9 @@ const validate = formValues => {
     return errors;
 };
 
-export default reduxForm({
+const formWrapped = reduxForm({
     form:'streamCreate',
-    validate: validate
+    validate,
 })(StreamCreate);
+
+export default connect(null, { createStream })(formWrapped);
